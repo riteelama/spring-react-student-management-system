@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import Box from '@mui/material/Box';
 import TextField from '@mui/material/TextField';
 import { Button, Container, Paper } from '@mui/material';
@@ -7,6 +7,7 @@ export default function Student() {
 	const paperStyle = {padding:'50px 20px', width:600, margin:'20px auto'}
 	const[name, setName] = useState('');
 	const[address,setAddress] = useState('');
+	const[students, setStudents] = useState([]);
 
 	const handleClick = (e) => {
 		e.preventDefault();
@@ -20,6 +21,17 @@ export default function Student() {
 			console.log("New Student Added Successfully");
 		});
 	}
+
+	useEffect(() => {
+		fetch("http://localhost:8080/student/getAllStudents")
+		  .then(res => res.json())
+		  .then(result => {
+			setStudents(result);
+		  })
+		  .catch(error => {
+			console.error("Error fetching students:", error);
+		  });
+	  }, []);
 
   return (
 	<Container>
@@ -45,6 +57,16 @@ export default function Student() {
 				</Button>
 				</Box>
 			</form>
+		</Paper>
+		<h1>Students</h1>
+		<Paper elevation={3}>
+			{students.map(student=>(
+				<Paper elevation={3} style={{margin:"10px", padding:"15px", textAlign:"left"}} key={student.id}>
+					Id:{student.id}
+					Name: {student.name}
+					Address: {student.address}
+				</Paper>
+			))}
 		</Paper>
 	</Container>
   );
